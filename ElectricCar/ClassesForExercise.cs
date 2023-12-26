@@ -9,13 +9,13 @@ namespace ElectricCar
 {
     public class Battery
     {
-        public event EventHandler ReachThreshold;
-        public event EventHandler ShutDown;
       
         const int MAX_CAPACITY = 1000;
         private static Random r = new Random();
         //Add events to the class to notify upon threshhold reached and shut down!
         #region events
+        public event EventHandler ReachThreshold;
+        public event EventHandler ShutDown;
         #endregion
         private int Threshold { get; }
         public int Capacity { get; set; }
@@ -32,12 +32,14 @@ namespace ElectricCar
             Threshold = 400;
         }
         public void Usage()
-        {
-            Capacity -= r.Next(50, 150);
-            //Add calls to the events based on the capacity and threshhold
-            if (Capacity < this.Threshold)
+        {  if (Capacity > 0)
             {
-                OnLowBatery();
+                Capacity -= r.Next(50, 150);
+                //Add calls to the events based on the capacity and threshhold
+                if (Capacity < this.Threshold)
+                {
+                    OnLowBatery();
+                }
             }
             #region Fire Events
             #endregion
@@ -46,19 +48,21 @@ namespace ElectricCar
         {
             ReachThreshold?.Invoke(this, new EventArgs());
         }
+        public void OnShutDown()
+        {
+            ShutDown?.Invoke(this, new EventArgs());
+        }
 
 
-    
-
-}
+    }
 
     class ElectricCar
     {
         public Battery Bat { get; set; }
         private int id;
-
+        public event EventHandler OnShutDown;
         //Add event to notify when the car is shut down
-
+        
 
         public ElectricCar(int id)
         { 
@@ -78,6 +82,10 @@ namespace ElectricCar
                 Bat.Usage();
             }
         }
+        public void OnOnShutDown()
+        {
+            OnShutDown?.Invoke(this, new EventArgs());
+        }
 
         //Add code to Define and implement the battery event implementations
         #region events implementation
@@ -91,7 +99,10 @@ namespace ElectricCar
         {
             return $"Car: {id}";
         }
-
+        public void OnShutDownMessege()
+        {
+            Console.WriteLine("Shut down");
+        }
     }
 
 }
